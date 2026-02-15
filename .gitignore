@@ -1,0 +1,7 @@
+# OSINT Gravity Gitignore
+cases/
+__pycache__/
+*.pyc
+.vercel
+node_modules/
+.env

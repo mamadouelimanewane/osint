@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravity OSINT | Secure Access</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-area">
+                <i class="fa-solid fa-circle-nodes"></i> GRAVITY<span class="highlight">OSINT</span>
+            </div>
+
+            <div class="security-badge">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>LEVEL 4 CLEARANCE REQUIRED</span>
+            </div>
+
+            <form id="login-form">
+                <div class="input-group">
+                    <label>OPERATOR ID</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user-secret"></i>
+                        <input type="text" id="username" placeholder="ENTER ID" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>ACCESS KEY</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-key"></i>
+                        <input type="password" id="password" placeholder="••••••••••••" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="mfa-section hidden" id="mfa-section">
+                    <label>2FA TOKEN</label>
+                    <div class="mfa-inputs">
+                        <input type="text" maxlength="1" class="mfa-digit">
+                        <input type="text" maxlength="1" class="mfa-digit">
+                        <input type="text" maxlength="1" class="mfa-digit">
+                        <input type="text" maxlength="1" class="mfa-digit">
+                        <input type="text" maxlength="1" class="mfa-digit">
+                        <input type="text" maxlength="1" class="mfa-digit">
+                    </div>
+                </div>
+
+                <div class="status-message" id="status-msg">
+                    <span class="blink">_WAITING FOR CREDENTIALS</span>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <span class="btn-text">INITIATE SESSION</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="disclaimer">
+                WARNING: UNAUTHORIZED ACCESS TO THIS SYSTEM IS A FEDERAL OFFENSE.
+                ALL ACTIVITIES ARE LOGGED AND MONITORED.
+            </div>
+        </div>
+
+        <div class="background-grid"></div>
+    </div>
+
+    <script src="js/login.js"></script>
+</body>
+
+</html>

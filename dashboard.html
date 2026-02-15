@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravity OSINT Platform | Investigation Dashboard</title>
+    <!-- Fonts & Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Graph Visualization Library -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <!-- Leaflet Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-circle-nodes"></i> GRAVITY<span class="highlight">OSINT</span>
+            </div>
+
+            <nav class="modules-nav">
+                <div class="nav-category">CORE MODULES</div>
+                <button class="nav-item active" onclick="switchView('graph')"><i
+                        class="fa-solid fa-diagram-project"></i> Graph View</button>
+                <button class="nav-item" onclick="switchView('map')"><i class="fa-solid fa-map-location-dot"></i> Geo
+                    Map</button>
+                <button class="nav-item" onclick="switchView('analysis')"><i class="fa-solid fa-brain"></i> AI
+                    Analysis</button>
+
+                <div class="nav-category">INTELLIGENCE</div>
+                <a href="#" class="nav-item"><i class="fa-brands fa-twitter"></i> Social Media</a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-mask"></i> Dark Web</a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-building"></i> Corporate</a>
+                <a href="#" class="nav-item"><i class="fa-brands fa-bitcoin"></i> Crypto</a>
+
+                <div class="nav-category">CASE MANAGEMENT</div>
+                <button class="nav-item" onclick="window.caseManager.saveCase()"><i class="fa-solid fa-floppy-disk"></i>
+                    Save Case</button>
+                <button class="nav-item" onclick="exportReport()"><i class="fa-solid fa-file-export"></i>
+                    Reports</button>
+            </nav>
+
+            <div class="system-status">
+                <div class="status-indicator online"></div>
+                <span>System Operational</span>
+                <small>v2.5.0-beta</small>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="search-console">
+                    <div class="search-input-group">
+                        <select class="search-type">
+                            <option value="person">Person</option>
+                            <option value="email">Email Address</option>
+                            <option value="phone">Phone Number</option>
+                            <option value="username">Username</option>
+                            <option value="crypto">Crypto Address</option>
+                        </select>
+                        <input type="text" id="main-search"
+                            placeholder="Enter target entity (e.g. johndoe@gmail.com)...">
+                        <button id="btn-search" class="btn-action"><i class="fa-solid fa-magnifying-glass"></i> RUN
+                            TRANSFORM</button>
+                    </div>
+                </div>
+                <div class="workspace-actions">
+                    <h2>Analysis Modules</h2>
+                    <div class="analysis-toolbar">
+                        <button class="btn-tool" onclick="executeAlgorithm('bot_detection')"><i
+                                class="fa-solid fa-robot"></i> Detect Bot Networks</button>
+                        <button class="btn-tool" onclick="executeAlgorithm('shortest_path')"><i
+                                class="fa-solid fa-route"></i> Find Connection Path</button>
+                        <button class="btn-tool" onclick="window.scanNetwork()"><i
+                                class="fa-solid fa-network-wired"></i> Scan Local Network (Nmap)</button>
+                    </div>
+                    <button class="icon-btn" title="Export Graph"><i class="fa-solid fa-download"></i></button>
+                    <button class="icon-btn" title="Settings"><i class="fa-solid fa-gear"></i></button>
+                    <div class="user-profile">
+                        <img src="https://ui-avatars.com/api/?name=Agent+Smith&background=2563eb&color=fff" alt="Agent">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Views Container -->
+            <div id="view-container" class="view-wrapper">
+                <!-- 1. Graph View -->
+                <div id="graph-container" class="view-panel active">
+                    <div class="graph-loader hidden">
+                        <div class="loader-spinner"></div>
+                        <div class="loader-text">RUNNING AI TRANSFORMS...</div>
+                        <div class="loader-console">
+                            > Querying Distributed Sources... OK<br>
+                            > Pattern Matching Algorithms...<br>
+                            > Triangulating Geolocations...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Map View -->
+                <div id="map-container" class="view-panel"></div>
+
+                <!-- 3. AI Analysis View -->
+                <div id="analysis-container" class="view-panel" style="padding: 2rem; color: white;">
+                    <h2>Advanced Network Analysis</h2>
+                    <div class="stats-grid-analysis">
+                        <div class="stat-box">
+                            <h3>Risk Score</h3>
+                            <div class="big-number text-danger">87/100</div>
+                        </div>
+                        <div class="stat-box">
+                            <h3>Linked Identities</h3>
+                            <div class="big-number">14</div>
+                        </div>
+                        <div class="stat-box">
+                            <h3>Sentiment</h3>
+                            <div class="big-number text-warning">Negative</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Cyber Feed Terminal (Now System Console) -->
+            <div id="terminal-container" class="cyber-console"
+                style="background: #000; border-top: 2px solid var(--accent);">
+                <div class="console-header">
+                    <span><i class="fa-solid fa-terminal"></i> GRAVITY_SYSTEM_CONSOLE (ROOT@LOCALHOST)</span>
+                    <div class="console-controls">
+                        <span class="live-badge" style="color: #10b981;">● READY (AWAITING INPUT)</span>
+                        <button onclick="document.getElementById('terminal-input').focus()"><i
+                                class="fa-solid fa-keyboard"></i></button>
+                    </div>
+                </div>
+                <div class="console-output" id="terminal-output"
+                    style="height: 120px; overflow-y: auto; padding: 10px; font-family: monospace; color: #0f0;">
+                    <div class="term-line">GRAVITY OSINT [Version 5.8.0]</div>
+                    <div class="term-line">(c) Gravity Defense Systems. All rights reserved.</div>
+                    <div class="term-line">Type 'help' for available commands.</div>
+                    <br>
+                </div>
+                <div class="console-input-area" style="display: flex; padding: 5px; background: #111;">
+                    <span style="color: #0f0; margin-right: 5px;">root@gravity:~$</span>
+                    <input type="text" id="terminal-input"
+                        style="flex: 1; background: transparent; border: none; color: #fff; font-family: monospace; outline: none;"
+                        placeholder="ping 8.8.8.8..." autocomplete="off">
+                </div>
+            </div>
+
+            <!-- Context Menu (Properties Panel) -->
+            <aside class="properties-panel" id="properties-panel">
+
+                <!-- Context Menu (Properties Panel) -->
+                <aside class="properties-panel" id="properties-panel">
+                    <div class="panel-header">
+                        <h3>Entity Details</h3>
+                        <button class="close-panel"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="entity-info" id="entity-details">
+                        <div class="empty-state">Select a node to view properties</div>
+                    </div>
+                    <div class="available-transforms">
+                        <h4>Available Transforms</h4>
+                        <ul class="transform-list" id="transform-list">
+                            <!-- Dynamic content -->
+                        </ul>
+                    </div>
+                </aside>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/osint-data.js"></script>
+    <script src="js/graph-engine.js"></script>
+    <script src="js/analysis-engine.js"></script>
+    <script src="js/terminal-system.js"></script> <!-- System Terminal -->
+    <script src="js/real-osint.js"></script>
+    <script src="js/special-ops.js"></script>
+    <script src="js/case-manager.js"></script>
+    <script src="js/nmap-module.js"></script> <!-- Nmap/ARP Scan -->
+    <script src="js/app.js"></script>
+</body>
+
+</html>
