@@ -14,15 +14,29 @@ const appState = {
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
-    initGraph();
-    initSearchHandler();
-    initPanelHandler();
+    try {
+        initGraph();
+        initSearchHandler();
+        initPanelHandler();
 
-    // Initialize Analysis Engine
-    appState.engine = new AnalysisEngine(appState.network, appState.nodes, appState.edges);
+        // Initialize Analysis Engine
+        if (typeof AnalysisEngine !== 'undefined') {
+            appState.engine = new AnalysisEngine(appState.network, appState.nodes, appState.edges);
+        }
 
-    // Initial Demo Data
-    console.log("System Initialized. Ready for queries.");
+        // Add Initial Global Node to prove it works
+        appState.nodes.add({
+            id: 'global_node',
+            label: 'OSINT GLOBAL HUB',
+            shape: 'diamond',
+            color: '#00f2fe',
+            size: 35
+        });
+
+        console.log("System Initialized. Ready for queries.");
+    } catch (e) {
+        console.error("Initialization Error:", e);
+    }
 });
 
 // --- UI Handlers ---
@@ -32,7 +46,8 @@ window.switchView = (view) => {
     viewRef.forEach(el => el.classList.remove('active'));
 
     // Show target
-    document.getElementById(`${view}-container`).classList.add('active');
+    const targetPanel = document.getElementById(`${view}-container`);
+    if (targetPanel) targetPanel.classList.add('active');
 
     // Init Map if needed
     if (view === 'map' && appState.engine) {
@@ -66,6 +81,7 @@ window.executeAlgorithm = (algoName) => {
 // --- Graph Engine (Vis.js) ---
 function initGraph() {
     const container = document.getElementById('graph-container');
+    if (!container) return;
 
     const data = {
         nodes: appState.nodes,
@@ -103,37 +119,41 @@ function initGraph() {
         }
     };
 
-    appState.network = new vis.Network(container, data, options);
+    if (typeof vis !== 'undefined') {
+        appState.network = new vis.Network(container, data, options);
 
-    // Event Listeners
-    appState.network.on('click', (params) => {
-        if (params.nodes.length > 0) {
-            const nodeId = params.nodes[0];
-            const nodeData = appState.nodes.get(nodeId);
-            showEntityDetails(nodeData);
-        } else {
-            hideEntityDetails();
-        }
-    });
-
-    // Double-click to open real links
-    appState.network.on('doubleClick', (params) => {
-        if (params.nodes.length > 0) {
-            const nodeId = params.nodes[0];
-            const node = appState.nodes.get(nodeId);
-            if (node.data && node.data.url) {
-                window.open(node.data.url, '_blank');
+        // Event Listeners
+        appState.network.on('click', (params) => {
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                const nodeData = appState.nodes.get(nodeId);
+                showEntityDetails(nodeData);
+            } else {
+                hideEntityDetails();
             }
-        }
-    });
+        });
 
-    // Cursor pointer on hover
-    appState.network.on("hoverNode", function () {
-        container.style.cursor = 'pointer';
-    });
-    appState.network.on("blurNode", function () {
-        container.style.cursor = 'default';
-    });
+        // Double-click to open real links
+        appState.network.on('doubleClick', (params) => {
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                const node = appState.nodes.get(nodeId);
+                if (node.data && node.data.url) {
+                    window.open(node.data.url, '_blank');
+                }
+            }
+        });
+
+        // Cursor pointer on hover
+        appState.network.on("hoverNode", function () {
+            container.style.cursor = 'pointer';
+        });
+        appState.network.on("blurNode", function () {
+            container.style.cursor = 'default';
+        });
+    } else {
+        console.error("Vis.js Library not loaded!");
+    }
 }
 
 // --- Search Logic & Data Simulation ---
@@ -141,15 +161,18 @@ window.executeSearch = (queryOverride, typeOverride) => {
     const searchInput = document.getElementById('main-search');
     const searchType = document.querySelector('.search-type');
 
-    const query = queryOverride || searchInput.value.trim();
-    const type = typeOverride || searchType.value;
+    const query = queryOverride || (searchInput ? searchInput.value.trim() : null);
+    const type = typeOverride || (searchType ? searchType.value : 'person');
 
-    if (!query) return;
+    if (!query) {
+        alert("Please enter a target (Email, IP, Name...)");
+        return;
+    }
 
     // Ensure we are in graph view to see results
     switchView('graph');
 
-    if (!queryOverride) searchInput.value = query; // Sync UI
+    if (!queryOverride && searchInput) searchInput.value = query; // Sync UI
 
     showLoader(true);
 
@@ -175,7 +198,7 @@ window.executeSearch = (queryOverride, typeOverride) => {
         simulateDiscovery(rootId, type, query);
 
         showLoader(false);
-        appState.network.fit();
+        if (appState.network) appState.network.fit();
     }, 1200);
 };
 
@@ -183,8 +206,8 @@ function initSearchHandler() {
     const searchBtn = document.getElementById('btn-search');
     const searchInput = document.getElementById('main-search');
 
-    searchBtn.addEventListener('click', () => window.executeSearch());
-    searchInput.addEventListener('keypress', (e) => {
+    if (searchBtn) searchBtn.addEventListener('click', () => window.executeSearch());
+    if (searchInput) searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') window.executeSearch();
     });
 }
@@ -254,11 +277,12 @@ async function simulateDiscovery(parentId, type, query) {
     for (let i = 0; i < count; i++) {
         const nodeId = `node_${Date.now()}_${i}`;
         let mockData = generateMockEntity(type);
-        appState.nodes.add({
-            id: nodeId, label: mockData.label, shape: 'dot', color: mockData.color, data: mockData.data
-        });
-
-        appState.edges.add({ from: parentId, to: nodeId, label: mockData.relation });
+        if (mockData) {
+            appState.nodes.add({
+                id: nodeId, label: mockData.label, shape: 'dot', color: mockData.color, data: mockData.data
+            });
+            appState.edges.add({ from: parentId, to: nodeId, label: mockData.relation });
+        }
     }
 }
 
@@ -313,7 +337,6 @@ function handleChimeraScenario(parentId) {
 }
 
 function generateMockEntity(parentType) {
-    // Simple logic to generate relevant mock connections
     const types = [
         { type: 'social', label: 'Twitter Account', icon: 'twitter', color: '#1d9bf0', relation: 'registered_on' },
         { type: 'social', label: 'LinkedIn Profile', icon: 'linkedin', color: '#0a66c2', relation: 'career' },
@@ -324,8 +347,6 @@ function generateMockEntity(parentType) {
     ];
 
     const random = types[Math.floor(Math.random() * types.length)];
-
-    // Generate random username/handle
     const suffix = Math.floor(Math.random() * 9999);
 
     return {
@@ -344,6 +365,7 @@ function generateMockEntity(parentType) {
 // --- UI Interaction ---
 function showLoader(show) {
     const loader = document.querySelector('.graph-loader');
+    if (!loader) return;
     if (show) loader.classList.remove('hidden');
     else loader.classList.add('hidden');
 }
@@ -352,8 +374,8 @@ function showEntityDetails(node) {
     const panel = document.getElementById('properties-panel');
     const details = document.getElementById('entity-details');
     const transforms = document.getElementById('transform-list');
+    if (!panel || !details || !transforms) return;
 
-    // Panel Content
     let html = `
         <div class="prop-row">
             <div class="prop-label">Entity Type</div>
@@ -379,7 +401,6 @@ function showEntityDetails(node) {
 
     details.innerHTML = html;
 
-    // Dynamic Transforms based on type
     let actions = '';
     if (node.data.type === 'email') {
         actions += `<li class="transform-item" onclick="runTransform('${node.id}', 'breach')"><i class="fa-solid fa-user-secret"></i> Check Leaks</li>`;
@@ -397,19 +418,19 @@ function showEntityDetails(node) {
     }
 
     transforms.innerHTML = actions;
-    panel.classList.add('active'); // Slide in
+    panel.classList.add('active');
 }
 
 function hideEntityDetails() {
     const panel = document.getElementById('properties-panel');
-    panel.classList.remove('active');
+    if (panel) panel.classList.remove('active');
 }
 
 function initPanelHandler() {
-    document.querySelector('.close-panel').addEventListener('click', hideEntityDetails);
+    const closeBtn = document.querySelector('.close-panel');
+    if (closeBtn) closeBtn.addEventListener('click', hideEntityDetails);
 }
 
-// --- 5. Breach Simulation ---
 const breaches = [
     { name: 'LinkedIn 2012', data: 'Email, Password Hash', date: '2012-05' },
     { name: 'Adobe', data: 'Email, Hint, Password', date: '2013-10' },
@@ -425,7 +446,6 @@ function checkBreaches(emailNodeId) {
             const breach = breaches[Math.floor(Math.random() * breaches.length)];
             const breachId = `breach_${Date.now()}_${i}`;
 
-            // Add breach node
             appState.nodes.add({
                 id: breachId,
                 label: `[LEAK] ${breach.name}`,
@@ -443,18 +463,16 @@ function checkBreaches(emailNodeId) {
         }
         showLoader(false);
         alert(`⚠️ CRITICAL: ${numBreaches} Leaked Credentials Found.`);
-        appState.network.fit();
+        if (appState.network) appState.network.fit();
     }, 1200);
 }
 
-// Global scope for onclick handlers
 window.runTransform = function (nodeId, type) {
     if (type === 'breach') {
         checkBreaches(nodeId);
         return;
     }
     showLoader(true);
-    // Simulate processing for others
     setTimeout(() => {
         simulateDiscovery(nodeId, type, 'extended');
         showLoader(false);
