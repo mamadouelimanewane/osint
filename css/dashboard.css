@@ -625,6 +625,23 @@ body {
     display: none;
 }
 
+.properties-panel {
+    position: absolute;
+    top: var(--header-height);
+    right: 0;
+    width: var(--panel-width);
+    height: calc(100% - var(--header-height) - 15vh);
+    background: rgba(10, 13, 20, 0.95);
+    border-left: 1px solid var(--border-color);
+    padding: 1.5rem;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(10px);
+    z-index: 100;
+}
+
 .properties-panel.active {
     transform: translateX(0);
 }

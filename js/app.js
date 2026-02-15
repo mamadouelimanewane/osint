@@ -146,6 +146,9 @@ window.executeSearch = (queryOverride, typeOverride) => {
 
     if (!query) return;
 
+    // Ensure we are in graph view to see results
+    switchView('graph');
+
     if (!queryOverride) searchInput.value = query; // Sync UI
 
     showLoader(true);
