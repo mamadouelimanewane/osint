@@ -137,48 +137,52 @@ function initGraph() {
 }
 
 // --- Search Logic & Data Simulation ---
-function initSearchHandler() {
-    const searchBtn = document.getElementById('btn-search');
+window.executeSearch = (queryOverride, typeOverride) => {
     const searchInput = document.getElementById('main-search');
     const searchType = document.querySelector('.search-type');
 
-    const executeSearch = () => {
-        const query = searchInput.value.trim();
-        const type = searchType.value;
+    const query = queryOverride || searchInput.value.trim();
+    const type = typeOverride || searchType.value;
 
-        if (!query) return;
+    if (!query) return;
 
-        showLoader(true);
+    if (!queryOverride) searchInput.value = query; // Sync UI
 
-        // Simulate API delay
-        setTimeout(() => {
-            const rootId = 'root_' + Date.now();
+    showLoader(true);
 
-            // Add Root Node
-            appState.nodes.add({
-                id: rootId,
-                label: query,
-                group: 'target',
-                color: { background: '#ef4444', border: '#fca5a5' },
-                size: 30,
-                data: {
-                    type: type,
-                    value: query,
-                    source: 'Manual Entry'
-                }
-            });
+    // Simulate API delay
+    setTimeout(() => {
+        const rootId = 'root_' + Date.now();
 
-            // Simulate finding related entities (The "OSINT" Magic)
-            simulateDiscovery(rootId, type, query);
+        // Add Root Node
+        appState.nodes.add({
+            id: rootId,
+            label: query,
+            group: 'target',
+            color: { background: '#ef4444', border: '#fca5a5' },
+            size: 30,
+            data: {
+                type: type,
+                value: query,
+                source: 'Manual Entry'
+            }
+        });
 
-            showLoader(false);
-            appState.network.fit();
-        }, 1500);
-    };
+        // Simulate finding related entities (The "OSINT" Magic)
+        simulateDiscovery(rootId, type, query);
 
-    searchBtn.addEventListener('click', executeSearch);
+        showLoader(false);
+        appState.network.fit();
+    }, 1200);
+};
+
+function initSearchHandler() {
+    const searchBtn = document.getElementById('btn-search');
+    const searchInput = document.getElementById('main-search');
+
+    searchBtn.addEventListener('click', () => window.executeSearch());
     searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') executeSearch();
+        if (e.key === 'Enter') window.executeSearch();
     });
 }
 

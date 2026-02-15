@@ -56,6 +56,9 @@ class SystemTerminal {
                 return;
             }
             this.executeRemote(cmd, arg);
+        } else if (cmd === 'chimera') {
+            this.print(">> ACCESSING CLASSIFIED SCENARIO: OPERATION CHIMERA", 'success');
+            window.executeSearch('CHIMERA', 'person');
         } else if (cmd === 'clear') {
             this.output.innerHTML = '';
         } else if (cmd === 'help') {
@@ -64,6 +67,7 @@ Available Commands:
   ping <target>       - Check host availability
   nslookup <target>   - Resolve domain names
   tracert <target>    - Trace route to host
+  chimera             - Start Operation Chimera
   clear               - Clear terminal
             `);
         } else {
