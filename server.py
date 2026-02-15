@@ -11,6 +11,13 @@ DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 class GravityHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
+        if self.path == '/api/heartbeat':
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"status": "online"}).encode('utf-8'))
+            return
+
         if self.path == '/api/list_cases':
             cases_dir = os.path.join(DIRECTORY, 'cases')
             if not os.path.exists(cases_dir):

@@ -19,12 +19,21 @@ class SystemTerminal {
 
     async checkStatus() {
         try {
-            await fetch('/api/heartbeat', { method: 'HEAD', timeout: 500 }); // Mock check
-            this.status.innerHTML = '● ONLINE (UPLINK ACTIVE)';
-            this.status.style.color = '#10b981';
+            const res = await fetch('/api/heartbeat');
+            if (res.ok) {
+                this.status.innerHTML = '● SYSTEM ONLINE (REAL-TIME ENABLED)';
+                this.status.style.color = '#10b981';
+            } else {
+                throw new Error();
+            }
         } catch (e) {
-            // Even if fails (since we didn't implement heartbeat), we assume active if page loads via Python
-            console.log("Terminal Uplink Check");
+            this.status.innerHTML = '● SIMULATION MODE (LOCAL SERVER OFFLINE)';
+            this.status.style.color = '#f59e0b';
+            setTimeout(() => {
+                this.print(">> NOTICE: Local Python server not detected.", 'warning');
+                this.print(">> Real network commands (Ping/Nmap) and Case Saving are disabled.", 'warning');
+                this.print(">> To enable full power, run START_SYSTEM.bat from your local machine.", 'warning');
+            }, 1000);
         }
     }
 

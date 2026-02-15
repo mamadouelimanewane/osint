@@ -1,25 +1,50 @@
-# GRAVITY OSINT PLATFORM
-**VERSION:** 5.8 (CLASSIFIED)
-**BUILD:** STABLE / DEPLOYABLE
+# 🌌 Gravity OSINT Platform
+
+![GitHub License](https://img.shields.io/github/license/mamadouelimanewane/osint?style=for-the-badge&color=blue)
+![Vercel Deploy](https://img.shields.io/badge/Vercel-Deployed-success?style=for-the-badge&logo=vercel)
+![Status](https://img.shields.io/badge/Status-Operating-00f2fe?style=for-the-badge)
+
+**Gravity OSINT** est une plateforme d'investigation tactique avancée conçue pour la visualisation de données, l'analyse de menaces et le renseignement opérationnel. Elle combine la puissance d'un moteur graphique dynamique avec des outils d'interception réseau réels.
 
 ---
 
-## ⚡ QUICK START
-1.  **Double-click** `LAUNCH_PLATFORM.bat`.
-2.  **Access Code**: Use any Operator ID in the Demo Environment.
-3.  **Command**: Type `CHIMERA` in the search bar to initiate the tactical scenario.
+## 🚀 Fonctionnalités d'Élite
 
-## 🛠 SYSTEM REQUIREMENTS
-*   **OS**: Windows 10/11, Linux, MacOS
-*   **Engine**: HTML5 / WebGL 2.0 (Modern Browser Required)
-*   **Security**: Local Sandbox Execution recommended
-
-## 📘 DOCUMENTATION
-*   **[MANUEL UTILISATEUR (FRANÇAIS)](docs/MANUAL_UTILISATEUR.md)** - 👈 **COMMENCEZ ICI / START HERE**
-*   `dashboard.html` - Main Intelligence Interface
-*   `login.html` - Secure Authentication Gateway
-*   `docs/USER_MANUAL.md` - Technical Specs (English)
-*   `js/` - Core Logic and Algorithms (Black Box)
+*   **🔍 Graph Intelligence** : Visualisation de réseaux complexes avec Vis.js.
+*   **📡 System Console (RCE)** : Exécution de commandes réelles (Ping, Nmap, Tracert) via un backend Python dédié.
+*   **📸 Opérations Spéciales** : Scanning biométrique, déchiffrement PGP et cyber-feed en temps réel.
+*   **🔓 Breach Intel** : Détection automatique de fuites de données (mots de passe, emails compromis).
+*   **🗺️ Geo-Mapping** : Cartographie mondiale interactive des cibles et des infrastructures.
 
 ---
-*WARNING: Unauthorized distribution is strictly prohibited. All activities are logged.*
+
+## 📘 Documentation & Guide
+*   **[MANUEL UTILISATEUR (FRANÇAIS)](docs/MANUAL_UTILISATEUR.md)** - 👈 **COMMENCEZ ICI**
+*   **[USER MANUAL (ENGLISH)](docs/USER_MANUAL.md)** - Technical Guide.
+
+---
+
+## 📂 Structure du Projet
+
+| Module | Description |
+| :--- | :--- |
+| `START_SYSTEM.bat` | Lanceur maître (Windows) |
+| `server.py` | Cœur du système (Backend Python) |
+| `dashboard.html` | Console d'investigation principale |
+| `cases/` | Dossiers d'enquêtes persistants |
+
+---
+
+## 🛠 Installation Rapide
+
+1.  **Clonez le dépôt** :
+    ```bash
+    git clone https://github.com/mamadouelimanewane/osint.git
+    ```
+2.  **Lancez le système** :
+    Exécutez `START_SYSTEM.bat` sur Windows.
+
+---
+
+*ATTENTION : Ce logiciel est conçu à des fins de démonstration et d'éducation. L'accès non autorisé est strictement interdit.*
+
